@@ -1,0 +1,60 @@
+@import '../../../../../assets/styles/vars.scss';
+
+:host{
+    .keyboard {
+        .keyboard-row{
+            display: flex;
+            width: 100%;
+
+            align-items: center;
+            justify-content: center;
+        }   
+
+        .keyboard-key {
+            $button-color: rgba(255,255,255,0.25);
+            border-radius: 4px;
+            display: inline-flex;
+            flex: 1 1;
+            text-align: center;
+            font-size: 1em;
+            font-weight: 500;
+            color: #fff;
+            justify-content: center;
+            margin: 2px;
+            max-width: calc(10% - 4px);
+            padding: 8px 0;            
+            border: 0;
+            text-transform: capitalize;
+            box-sizing: border-box;
+            background-color: $button-color;
+
+            .letter-wrapper {
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            &.special {
+                max-width: calc(15% - 4px);
+            }
+
+            &:active {
+                box-shadow: 0 2px 4px rgba(25,25,25,0.25);
+                background-color: darken($button-color, 20);
+            }
+
+            &.used{
+                background-color: $used;
+            }
+
+            &.present {
+                background-color: $present;
+            }
+
+            &.match {
+                background: $match;
+            }
+        }
+    }
+}

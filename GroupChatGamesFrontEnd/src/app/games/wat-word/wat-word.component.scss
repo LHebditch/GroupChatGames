@@ -1,0 +1,210 @@
+@import '../../../assets/styles/vars.scss';
+
+:host {
+    @keyframes enlarge {
+        0%{
+            transform: scale(0);
+        }
+
+        60% {
+            transform: scale(1.25);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+    // WAIT I CAN EXPLAIN!!!!
+    // the _2 animations are for essentially reseting animations...
+    // sorry
+    @keyframes enlarge_2 {
+        0%{
+            transform: scale(0);
+        }
+
+        60% {
+            transform: scale(1.25);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes appear {
+        0%{
+            transform: scale(0);
+        }
+
+        60% {
+            transform: scale(1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes appear_2 {
+        0%{
+            transform: scale(0);
+        }
+
+        60% {
+            transform: scale(1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes jump {
+        0%{
+            transform:translateY(0em);
+        }
+
+        40% {
+            transform:translateY(-1.25em);
+        }
+
+        100% {
+            transform:translateY(0em);
+        }
+    }
+
+    header{        
+        display: flex;
+        align-items: center;  
+        
+        h1 {
+            margin:0;
+            width: 100%;
+            text-align: center;
+        }
+
+        a {
+            display: flex;
+        }
+    }
+
+    .game-container {
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: calc(100% - 16px);
+        max-width: 400px;
+        margin: auto;
+    }
+
+    .game-row {
+        display: flex;
+
+        .game-tile {
+            display: grid;
+            box-sizing: border-box;
+            border: 2px solid rgba(255,255,255,0.25);
+            // overflow: hidden;
+
+            &.show {
+                border-color: #262626;
+            }
+
+            .letter{
+                display: inline-flex;  
+                align-items: center;
+                justify-content: center;
+                text-transform: capitalize;
+                font-weight: 500;
+                font-size: 2em;                
+
+                &.show {
+                    transform: rotate3d(1, 1, 0, 90deg);
+                    transform: scale(1); 
+                    animation: appear linear 0.5s;
+                    span {
+                        animation: enlarge linear 0.5s;
+                    }
+                }
+
+                &.locked {
+                    background-color: rgba(255,255,255,0.25);
+                    animation: appear_2 linear 0.5s;    
+
+                    span {
+                        animation: enlarge_2 linear 0.5s;
+                    }     
+
+                    &.present {
+                        background-color: $present;
+                    }
+
+                    &.match {
+                        background: $match;
+                    }
+                }
+
+                &.correct {
+                    animation: jump linear 0.5s;
+                }
+
+                &::before {
+                    content: '';
+                    display: inline-block;
+                    padding-bottom: 100%;
+                }
+            }
+        }
+    }
+
+    .modal {
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+
+            p {
+                display: flex;
+                flex-direction: column;
+                text-align: center;
+                padding: 16px;
+                margin:0;
+            }
+        }
+
+        .answer{
+            text-align: center;
+
+            .word {
+                text-transform: capitalize;
+                font-weight: 700;
+                padding: 8px 12px;
+                border-radius: 5em;
+                box-shadow: 0 2px 4px rgba(25,25,25,0.2);
+                text-transform: uppercase;
+            }
+        }
+
+        .actions {
+            padding: 16px 0;
+            display: flex;
+            justify-content: center;
+
+            .share {
+                padding: 16px 24px;
+                border:0;
+                background-color: $match;
+                color: #fff;
+                font-size: 1.5em;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: .5em;
+
+                span {
+                    margin-right: 8px;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,42 @@
+<section class="game-container">
+    <header>
+        <a routerLink="/">
+            <i-feather name="home"></i-feather>
+        </a>
+        <h1>WORDDITCH</h1>
+    </header>
+    <section [ngStyle]="getGridStyles()">
+        <div *ngFor="let row of gameBoard?.rows" class="game-row" [ngStyle]="getGridRowStyles()">
+            <div *ngFor="let tile of row" [class.show]="!!tile.letter" class="game-tile">
+                <span [class.match]="tile.sharesLocation" [class.present]="tile.isPresentInSolution" class="letter"
+                    [class.show]="!!tile.letter && !tile.commited" [class.correct]="tile.correct"
+                    [class.locked]="tile.commited">
+                    <span>{{tile.letter}}</span>
+                </span>
+            </div>
+        </div>
+    </section>
+    <section>
+        <gcg-keyboard [usedKeys]="usedKeys" (onBackspacePress)="removeCharacter()" (onEnterPress)="makeGuess()"
+            (onLetterPress)="addCharacter($event)"></gcg-keyboard>
+    </section>
+
+    <gcg-modal [title]="modalTitle" *ngIf="displayModal" class="modal" (onClose)="closeModal()">
+        <div class="stats">
+            <p><b>{{state?.gamesPlayed}}</b> <span>Played</span></p>
+            <p><b>{{state?.gamesLost}}</b><span>Lost</span></p>
+            <p><b>{{100 - ((state?.gamesLost || 0) / (state?.gamesPlayed || 0)) * 100}}%</b><span>Win%</span></p>
+            <p><b>{{state?.streak}}</b><span>Streak</span></p>
+        </div>
+        <div class="answer">
+            <p>Todays word was <span class="word">{{word}}</span></p>
+        </div>
+        <div class="actions">
+            <button class="share" (click)="shareResult()">
+                <span>SHARE</span>
+                <i-feather name="share-2"></i-feather>
+            </button>
+        </div>
+    </gcg-modal>
+
+</section>

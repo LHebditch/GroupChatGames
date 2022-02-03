@@ -1,0 +1,139 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Group Chat Games
+
+Resources:
+  ## Cloud front
+  CloudFrontOriginAccessIdentity:
+    Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: "Group Chat Games Website"
+
+  CloudfrontDistribution:
+    Type: "AWS::CloudFront::Distribution"
+    Properties:
+      DistributionConfig:
+        Comment: "Cloudfront distribution for group chat games"
+        DefaultRootObject: "index.html"
+        Enabled: true
+        HttpVersion: http2
+        # List of origins that Cloudfront will connect to
+        Origins:
+          - Id: s3-website
+            DomainName: !GetAtt FrontEndBucket.DomainName
+            S3OriginConfig:
+              # Restricting Bucket access through an origin access identity
+              OriginAccessIdentity:
+                Fn::Sub: "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
+        # To connect the CDN to the origins you need to specify behaviours
+        DefaultCacheBehavior:
+          # Compress resources automatically ( gzip )
+          Compress: "true"
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          ForwardedValues:
+            QueryString: false
+          TargetOriginId: s3-website
+          ViewerProtocolPolicy: redirect-to-https
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+          - ErrorCode: 400
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+
+  ## S3 bucket
+  FrontEndBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: group-chat-games-front-end
+
+  FrontEndBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontEndBucket
+      PolicyDocument:
+        # Restricting access to cloudfront only.
+        Statement:
+          - Effect: Allow
+            Action: "s3:GetObject"
+            Resource:
+              - !Sub "arn:aws:s3:::${FrontEndBucket}/*"
+            Principal:
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}"
+
+  WordStore:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: group-chat-games-word-store
+
+  WordOfTheDay:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: Word of the day
+      Name: WORD_OF_THE_DAY
+      Type: String
+      Value: flump
+
+  UpdateWordOfDay:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GCG_Update_Word
+      Handler: index.handler
+      Runtime: nodejs14.x
+      CodeUri: ./lambdas/update-word-of-day
+      Events:
+        InvocationLevel:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 * * ? *)
+      Policies:
+        - Statement:
+            - Sid: GCGUpdateParamStore
+              Effect: Allow
+              Action:
+                - ssm:PutParameter
+              Resource: "*"
+        - Statement:
+            - Sid: GCGReadWordsFromS3
+              Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+              Resource:
+                - !GetAtt WordStore.Arn
+                - !Sub "${WordStore.Arn}/*"
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref WordStore
+          PARAM_NAME: !Ref WordOfTheDay
+  GetWordOfDay:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GCG_Get_Word
+      Handler: index.handler
+      Runtime: nodejs14.x
+      CodeUri: ./lambdas/get-word
+      Events:
+        HttpGet:
+          Type: Api
+          Properties:
+            Path: /word-of-day
+            Method: get
+      Policies:
+        - Statement:
+            - Sid: GCGUpdateParamStore
+              Effect: Allow
+              Action:
+                - ssm:GetParameter
+              Resource: "*"
+      Environment:
+        Variables:
+          PARAM_NAME: !Ref WordOfTheDay

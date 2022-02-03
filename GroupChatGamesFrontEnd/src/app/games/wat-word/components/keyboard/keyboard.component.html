@@ -1,0 +1,11 @@
+<section class="keyboard">
+    <div class="keyboard-row" *ngFor="let row of keyBoardDef">
+        <button [class.used]="char.used" [class.present]="char.present" [class.match]="char.match"
+            [class.special]="char.isSpecial" class="keyboard-key" (click)="keyPress(char.val)" *ngFor="let char of row">
+            <div *ngIf="!char.isSpecial" class="letter-wrapper">
+                <span>{{char.val}}</span>
+            </div>
+            <i-feather *ngIf="char.isSpecial" [name]="char.icon"></i-feather>
+        </button>
+    </div>
+</section>
