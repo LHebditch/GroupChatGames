@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { UsedKey } from './components/keyboard/keyboard.component';
 import ACCEPTABLE_WORDS from './data/english-words.json';
 import GameBoard, { GameBoardTile } from './models/game-board';
@@ -17,6 +18,7 @@ type GameState = {
   guesses: string[];
   dateTS: number
   status: GameStatus;
+  solution: string;
 }
 
 @Component({
@@ -40,7 +42,10 @@ export class WatWordComponent implements OnInit {
   private won: boolean = false;
   private stateKey = 'wordditch';
 
-  constructor(private wordService: WordService) { }
+  constructor(private wordService: WordService, private titleService: Title, private metaService: Meta) {
+    this.titleService.setTitle('Wordditch');
+    this.metaService.addTag({ name: 'description', content: 'A wordle clone for my friends, away from NYT' });
+  };
 
   async ngOnInit(): Promise<void> {
     this.fetchTodaysWord();
@@ -81,7 +86,8 @@ export class WatWordComponent implements OnInit {
   }
 
   public async shareResult() {
-    const output = this.gameBoard.getShareOutput();
+    const state = this.getState();
+    const output = this.gameBoard.getShareOutput(state.streak);
     const shareData: ShareData = { text: output };
 
     if (window.navigator.canShare(shareData)) {
@@ -96,7 +102,7 @@ export class WatWordComponent implements OnInit {
     let usedKeys;
     if (this.currentGuess.length === this.word.length && this.wordIsValid() && this.canPlay) {
       this.canPlay = false;
-      usedKeys = this.evaluateGuess(this.currentGuess);
+      usedKeys = this.evaluateGuess(this.currentGuess); // guesses increased by 1
       this.gameBoard.commitRow(this.guesses.length - 1);
 
       if (this.currentGuess !== this.word) {
@@ -107,7 +113,10 @@ export class WatWordComponent implements OnInit {
       // update the state to record the guesses
       const state = this.getState();
       state.guesses = this.guesses;
+      state.status = GameStatus.IN_PROGRESS;
       this.saveState(state);
+    } else {
+      this.gameBoard.failRow(this.guesses.length); // no guess has been added
     }
     this.activeUsedKeys = { ...this.usedKeys, ...usedKeys };
   }
@@ -173,8 +182,8 @@ export class WatWordComponent implements OnInit {
 
   private gameBoardRowFromGuess(guess: string): GameBoardTile[] {
     const row: GameBoardTile[] = [];
-    guess.split('').forEach((letter: string, index: number) => {
-      const tile: GameBoardTile = { letter, isPresentInSolution: false, sharesLocation: false, commited: true, correct: false }
+    guess.split('').forEach((letter: string) => {
+      const tile: GameBoardTile = { letter, isPresentInSolution: false, sharesLocation: false, commited: true, correct: false, fail: false }
       row.push(tile);
     });
     return row;
@@ -200,9 +209,9 @@ export class WatWordComponent implements OnInit {
   private storeWin() {
     const state = this.getState();
     if (state.status === GameStatus.IN_PROGRESS) {
+
       state.streak += 1;
       state.gamesPlayed += 1;
-      state.dateTS = Date.now();
       state.status = GameStatus.WON;
       this.saveState(state);
     }
@@ -214,7 +223,6 @@ export class WatWordComponent implements OnInit {
       state.streak = 0;
       state.gamesPlayed += 1;
       state.gamesLost += 1;
-      state.dateTS = Date.now();
       state.status = GameStatus.LOST;
       this.saveState(state);
     }
@@ -238,13 +246,15 @@ export class WatWordComponent implements OnInit {
     if (!!stateString) {
       state = JSON.parse(stateString) as GameState;
     } else {
-      state = { streak: 0, guesses: this.guesses, dateTS: Date.now(), gamesLost: 0, gamesPlayed: 0, status: GameStatus.IN_PROGRESS };
+      state = { solution: this.word, streak: 0, guesses: this.guesses, dateTS: Date.now(), gamesLost: 0, gamesPlayed: 0, status: GameStatus.IN_PROGRESS };
     }
     this.state = state;
     return state;
   }
 
   private saveState(state: GameState) {
+    state.solution = this.word;
+    state.dateTS = new Date().getTime();
     localStorage.setItem(this.stateKey, JSON.stringify(state));
   }
 
@@ -260,13 +270,26 @@ export class WatWordComponent implements OnInit {
   }
 
   private fetchTodaysWord(): void {
-    this.wordService.getWord().subscribe(({ word }) => {
-      this.word = word;
-      this.gameBoard = new GameBoard(this.word.length);
-      this.loadGameFromState();
+    const state = this.getState();
 
-      this.gameBoard.postSubmit.subscribe(() => this.postSubmit());
-    });
+    if (this.datesMatch(new Date(), new Date(state.dateTS)) && !!state.solution) {
+      this.loadGame(state.solution);
+    } else {
+      this.wordService.getWord().subscribe(({ word }) => {
+        this.loadGame(word);
+        state.guesses = [];
+        state.status = GameStatus.IN_PROGRESS;
+        this.saveState(state);
+      });
+    }
+  }
+
+  private loadGame(word: string): void {
+    this.word = word;
+    this.gameBoard = new GameBoard(this.word.length);
+    this.loadGameFromState();
+
+    this.gameBoard.postSubmit.subscribe(() => this.postSubmit());
   }
 
   // trigger the win animation

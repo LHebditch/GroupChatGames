@@ -1,12 +1,8 @@
 <section class="game-container">
-    <header>
-        <a routerLink="/">
-            <i-feather name="home"></i-feather>
-        </a>
-        <h1>WORDDITCH</h1>
-    </header>
-    <section [ngStyle]="getGridStyles()">
-        <div *ngFor="let row of gameBoard?.rows" class="game-row" [ngStyle]="getGridRowStyles()">
+    <gcg-header header="WORDDITCH"></gcg-header>
+    <section [ngStyle]="getGridStyles()" *ngIf="!!word; else loading">
+        <div *ngFor="let row of gameBoard?.rows" class="game-row" [class.fail]="row[0]?.fail"
+            [ngStyle]="getGridRowStyles()">
             <div *ngFor="let tile of row" [class.show]="!!tile.letter" class="game-tile">
                 <span [class.match]="tile.sharesLocation" [class.present]="tile.isPresentInSolution" class="letter"
                     [class.show]="!!tile.letter && !tile.commited" [class.correct]="tile.correct"
@@ -20,6 +16,16 @@
         <gcg-keyboard [usedKeys]="usedKeys" (onBackspacePress)="removeCharacter()" (onEnterPress)="makeGuess()"
             (onLetterPress)="addCharacter($event)"></gcg-keyboard>
     </section>
+    <ng-template #loading>
+        <section class="loading-message">
+            <h2>Fetching Today's Word</h2>
+            <div>
+                <span class="waiting"></span>
+                <span class="waiting"></span>
+                <span class="waiting"></span>
+            </div>
+        </section>
+    </ng-template>
 
     <gcg-modal [title]="modalTitle" *ngIf="displayModal" class="modal" (onClose)="closeModal()">
         <div class="stats">
@@ -29,7 +35,7 @@
             <p><b>{{state?.streak}}</b><span>Streak</span></p>
         </div>
         <div class="answer">
-            <p>Todays word was <span class="word">{{word}}</span></p>
+            <p>Today's word was <span class="word">{{word}}</span></p>
         </div>
         <div class="actions">
             <button class="share" (click)="shareResult()">

@@ -9,6 +9,8 @@ import { IconsModule } from './modules/icons/icons.module';
 import { WinModalComponent } from './games/wat-word/components/modal/modal.component';
 import { HomeComponent } from './views/home/home.component';
 import { HttpClientModule } from '@angular/common/http';
+import { HangmanComponent } from './games/hangman/hangman.component';
+import { HeaderComponent } from './components/shared/header/header.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +18,9 @@ import { HttpClientModule } from '@angular/common/http';
     WatWordComponent,
     KeyboardComponent,
     WinModalComponent,
-    HomeComponent
+    HomeComponent,
+    HangmanComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,

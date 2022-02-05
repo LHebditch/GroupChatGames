@@ -7,6 +7,7 @@ export type GameBoardTile = {
     sharesLocation: boolean;
     commited: boolean;
     correct: boolean;
+    fail: boolean;
 }
 
 export default class GameBoard {
@@ -24,7 +25,8 @@ export default class GameBoard {
                     isPresentInSolution: false,
                     sharesLocation: false,
                     commited: false,
-                    correct: false
+                    correct: false,
+                    fail: false
                 });
             }
             this.rows.push(row);
@@ -87,7 +89,7 @@ export default class GameBoard {
         });
     }
 
-    public getShareOutput(): string {
+    public getShareOutput(streak: number): string {
         const shareIcons = { present: '🟨', used: '⬜', match: '🟩' };
         const today = new Date();
         const day = today.getDate();
@@ -100,8 +102,26 @@ export default class GameBoard {
                     output += l.sharesLocation ? shareIcons.match : l.isPresentInSolution ? shareIcons.present : shareIcons.used;
                 }
             })
-            output += r.length ? '\n' : '';
+            output += this.getRowWord(r) ? '\n' : '';
         });
-        return output;
+        debugger
+        return `${output}\nCurrent Streak: ${streak}`;
+    }
+
+    private getRowWord(row: GameBoardTile[]): string {
+        return row.reduce((word, r) => word + r.letter, '');
+    }
+
+    public failRow(rowIndex: number) {
+        this.rows[rowIndex].forEach(r => {
+            // if the user keeps pressng it then repeat
+            r.fail = false;
+            setTimeout(() => {
+                r.fail = true
+            }, 1);
+        });
+        // setTimeout(() => {
+        //     this.rows[rowIndex].forEach(r => r.fail = false);
+        // }, 1000);
     }
 }
