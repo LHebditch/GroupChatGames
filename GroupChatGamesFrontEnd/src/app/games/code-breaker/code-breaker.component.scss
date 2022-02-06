@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500&display=swap');
+
+$color: #21ed24;
+:host {
+    font-family: 'Orbitron', sans-serif;
+    
+    .game-container {
+        background-color: #000;
+        color: $color;
+
+        
+
+        .console {
+            height: 20%;
+            border-top: 1px solid $color;
+
+            .lives {
+                margin:0;
+                padding-bottom: 16px;
+    
+                .life {
+                    height: 1em;
+                    width: 1em;
+                    display: inline-block;
+                    margin: 0 0.25em;
+                    background-color: $color;
+                }
+            }
+
+            p {
+                margin: 0.25em;
+                font-size: 0.75em;
+            }
+        }
+    }
+}

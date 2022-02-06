@@ -1,0 +1,14 @@
+<section class="code-breaker" *ngIf="playing; else completion">
+    <div class="game-row" *ngFor="let row of gameBoard let rowIndex = index">
+        <span (click)="makeGuess(rowIndex, c.isWord)" (mouseenter)="focusRow(rowIndex, c.isWord)"
+            (mouseleave)="unfocusRow(rowIndex, c.isWord)" *ngFor="let c of row.row;" [class.word]="c.isWord"
+            [class.focus]="row.focussed && c.isWord" [class.show]="c.shown">{{c.char}}</span>
+    </div>
+</section>
+
+<ng-template #completion>
+    <section>
+        <h3>{{completionHeader}}</h3>
+        <p>{{completionSubHeader}}</p>
+    </section>
+</ng-template>

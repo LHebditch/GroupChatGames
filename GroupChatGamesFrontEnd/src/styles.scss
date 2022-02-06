@@ -10,17 +10,30 @@ html, body {
     overflow-x: hidden;
     scroll-behavior: smooth;
 }
+body {
+    a {
+        color: #000;
+    }
 
-a {
-    color: #000;
-}
+    .game-container {
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: calc(100% - 16px);
+        max-width: 400px;
+        margin: auto;
+    }
 
-.game-container {
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: calc(100% - 16px);
-    max-width: 400px;
-    margin: auto;
+    main {
+        height: 100%;
+        background: linear-gradient(to bottom, rgb(68, 160, 141), rgb(9, 54, 55));
+        overflow: auto;
+    }
+
+    &.pitch-black {
+        main {
+            background: #000;
+        }
+    }
 }

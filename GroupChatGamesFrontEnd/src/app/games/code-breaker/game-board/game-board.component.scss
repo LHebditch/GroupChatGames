@@ -1,0 +1,39 @@
+.code-breaker {
+    color: #21ed24;
+
+    .game-row {
+        font-size: 1.5em;
+        display: grid;
+        grid-template-columns: repeat(25, 1fr);
+        text-transform: uppercase;
+
+        @media screen and (max-width: 390px) {
+            font-size: 1em;
+        }
+
+        @media screen and (max-height: 850px) {
+            font-size: 1em;
+        }
+
+        span {
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+
+            &.show {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+            &:hover,
+            &.focus {
+                background-color: #21ed24;
+                color: #000
+            }
+
+            &.word {
+                cursor: pointer;
+            }
+        }
+    }
+}

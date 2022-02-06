@@ -11,6 +11,8 @@ import { HomeComponent } from './views/home/home.component';
 import { HttpClientModule } from '@angular/common/http';
 import { HangmanComponent } from './games/hangman/hangman.component';
 import { HeaderComponent } from './components/shared/header/header.component';
+import { CodeBreakerComponent } from './games/code-breaker/code-breaker.component';
+import { CodeBreakerGameBoardComponent } from './games/code-breaker/game-board/game-board.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { HeaderComponent } from './components/shared/header/header.component';
     WinModalComponent,
     HomeComponent,
     HangmanComponent,
-    HeaderComponent
+    HeaderComponent,
+    CodeBreakerComponent,
+    CodeBreakerGameBoardComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,15 @@
+<section class="game-container">
+    <gcg-header color="#21ed24" header="HACKITCH"></gcg-header>
+
+    <gcg-code-breaker-game-board (guess)="onGuess($event)"></gcg-code-breaker-game-board>
+    <section class="console">
+        <section class="lives">
+            <p>
+                Attempts Left: <span class="life" *ngFor="let i of lives"></span>
+            </p>
+        </section>
+
+        <p *ngFor="let entry of consoleEntries">{{entry}}</p>
+    </section>
+
+</section>
