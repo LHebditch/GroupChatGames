@@ -82,6 +82,14 @@ Resources:
       Type: String
       Value: flump
 
+  HackitchWords:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: Hackitch Words
+      Name: HACKITCH_WORDS
+      Type: String
+      Value: '{"solution":"","clutter":[]}'
+
   UpdateWordOfDay:
     Type: AWS::Serverless::Function
     Properties:
@@ -114,6 +122,40 @@ Resources:
         Variables:
           BUCKET_NAME: !Ref WordStore
           PARAM_NAME: !Ref WordOfTheDay
+
+  UpdateHackitchWords:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GCG_Update_Hackitch_Words
+      Handler: index.handler
+      Runtime: nodejs14.x
+      CodeUri: ./lambdas/update-hackitch-words
+      Events:
+        InvocationLevel:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 * * ? *)
+      Policies:
+        - Statement:
+            - Sid: GCGUpdateParamStore
+              Effect: Allow
+              Action:
+                - ssm:PutParameter
+              Resource: "*"
+        - Statement:
+            - Sid: GCGReadWordsFromS3
+              Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+              Resource:
+                - !GetAtt WordStore.Arn
+                - !Sub "${WordStore.Arn}/*"
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref WordStore
+          PARAM_NAME: !Ref HackitchWords
+
   GetWordOfDay:
     Type: AWS::Serverless::Function
     Properties:
@@ -137,3 +179,27 @@ Resources:
       Environment:
         Variables:
           PARAM_NAME: !Ref WordOfTheDay
+
+  GetHackitchWords:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GCG_Get_hackitch_Words
+      Handler: index.handler
+      Runtime: nodejs14.x
+      CodeUri: ./lambdas/get-hackitch-words
+      Events:
+        HttpGet:
+          Type: Api
+          Properties:
+            Path: /hackitch
+            Method: get
+      Policies:
+        - Statement:
+            - Sid: GCGUpdateParamStore
+              Effect: Allow
+              Action:
+                - ssm:GetParameter
+              Resource: "*"
+      Environment:
+        Variables:
+          PARAM_NAME: !Ref HackitchWords

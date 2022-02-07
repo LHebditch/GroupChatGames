@@ -12,7 +12,7 @@ const main = async () => {
         .toString()
         .split('\n')
         .filter(Boolean)
-        .filter(w => w.length === 5)
+        .filter(w => w.length === 4)
         .map(w => ({ word: w, lastUsed: new Date(null).getTime() }));
 
     const json = JSON.parse(`{ "words": ${JSON.stringify(words.filter(Boolean))} }`);

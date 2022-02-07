@@ -1,39 +1,64 @@
-.code-breaker {
-    color: #21ed24;
+:host{
+    $color: #21ed24;
+    .code-breaker {
+        color:  $color;
 
-    .game-row {
-        font-size: 1.5em;
-        display: grid;
-        grid-template-columns: repeat(25, 1fr);
-        text-transform: uppercase;
+        .game-row {
+            font-size: 1.5em;
+            display: grid;
+            grid-template-columns: repeat(25, 1fr);
+            text-transform: uppercase;
 
-        @media screen and (max-width: 390px) {
-            font-size: 1em;
+            @media screen and (max-width: 390px) {
+                font-size: 1em;
+            }
+
+            @media screen and (max-height: 850px) {
+                font-size: 1em;
+            }
+
+            span {
+                text-align: center;
+                opacity: 0;
+                pointer-events: none;
+
+                &.show {
+                    opacity: 1;
+                    pointer-events: all;
+                }
+
+                &:hover,
+                &.focus {
+                    background-color:  $color;
+                    color: #000;
+                }
+
+                &.guessed.word {
+                    background-color: #000;
+                    color: #000;
+                    pointer-events: none;
+                }
+
+                &.word {
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+    .completion-message {
+        .solution {
+            text-transform: uppercase;
         }
 
-        @media screen and (max-height: 850px) {
-            font-size: 1em;
-        }
-
-        span {
-            text-align: center;
-            opacity: 0;
-            pointer-events: none;
-
-            &.show {
-                opacity: 1;
-                pointer-events: all;
-            }
-
-            &:hover,
-            &.focus {
-                background-color: #21ed24;
-                color: #000
-            }
-
-            &.word {
-                cursor: pointer;
-            }
+        .share {
+            background-color: #000;
+            border:1px dashed  $color;
+            color: $color;
+            padding: 16px;
+            font-weight: 500;
+            font-size: 1.5em;
+            cursor: pointer;
+            font-family: inherit;
         }
     }
 }

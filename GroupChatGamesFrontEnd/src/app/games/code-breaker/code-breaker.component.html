@@ -1,7 +1,7 @@
 <section class="game-container">
     <gcg-header color="#21ed24" header="HACKITCH"></gcg-header>
 
-    <gcg-code-breaker-game-board (guess)="onGuess($event)"></gcg-code-breaker-game-board>
+    <gcg-code-breaker-game-board (share)="share()" (guess)="onGuess($event)"></gcg-code-breaker-game-board>
     <section class="console">
         <section class="lives">
             <p>

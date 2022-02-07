@@ -104,7 +104,7 @@ export default class GameBoard {
             })
             output += this.getRowWord(r) ? '\n' : '';
         });
-        debugger
+
         return `${output}\nCurrent Streak: ${streak}`;
     }
 

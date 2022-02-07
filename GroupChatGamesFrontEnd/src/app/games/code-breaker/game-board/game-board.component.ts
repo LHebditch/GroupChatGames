@@ -1,5 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
-import { interval } from 'rxjs';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { GameBoardRow } from './model/game-borad-row';
 
 @Component({
@@ -9,6 +8,7 @@ import { GameBoardRow } from './model/game-borad-row';
 })
 export class CodeBreakerGameBoardComponent {
   @Output('guess') guess: EventEmitter<string> = new EventEmitter<string>();
+  @Output('share') share: EventEmitter<void> = new EventEmitter<void>();
   public word: string;
   public gameBoard: GameBoardRow[];
   public playing = true;
@@ -33,7 +33,7 @@ export class CodeBreakerGameBoardComponent {
   public displayWin() {
     this.playing = false;
     this.completionHeader = 'Congratulations!';
-    this.completionSubHeader = 'You found today\'s codeword!'
+    this.completionSubHeader = 'You found today\'s codeword'
   }
 
   public displayLoss() {
@@ -54,11 +54,21 @@ export class CodeBreakerGameBoardComponent {
     }
   }
 
+  public wordIndex(word: string): number {
+    return this.gameBoard.map(r => r.word).indexOf(word);
+  }
+
   public makeGuess(rowIndex: number, isWord: boolean) {
     if (isWord) {
-      const wordGuessed = this.gameBoard[rowIndex].word;
+      const row = this.gameBoard[rowIndex];
+      row.guessed = true;
+      const wordGuessed = row.word;
       this.guess.emit(`${wordGuessed}`);
     }
+  }
+
+  public shareResult() {
+    this.share.emit();
   }
 
   private displayGame(board: GameBoardRow[]): void {

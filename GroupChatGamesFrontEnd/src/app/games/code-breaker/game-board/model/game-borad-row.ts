@@ -10,6 +10,7 @@ export class GameBoardRow {
     public row: GameBoardCharacter[];
     public word: string;
     public focussed: boolean = false;
+    public guessed: boolean = false;
 
     private specialCharacters = [
         '}', '{', '[', ']', '@', '#', '!', '$', '?', '"', '>', '<', ':', ',',
