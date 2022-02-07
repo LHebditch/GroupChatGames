@@ -209,7 +209,6 @@ export class WatWordComponent implements OnInit {
   private storeWin() {
     const state = this.getState();
     if (state.status === GameStatus.IN_PROGRESS) {
-
       state.streak += 1;
       state.gamesPlayed += 1;
       state.status = GameStatus.WON;

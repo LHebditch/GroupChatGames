@@ -14,7 +14,8 @@
     </section>
     <section>
         <gcg-keyboard [usedKeys]="usedKeys" (onBackspacePress)="removeCharacter()" (onEnterPress)="makeGuess()"
-            (onLetterPress)="addCharacter($event)"></gcg-keyboard>
+            (onLetterPress)="addCharacter($event)">
+        </gcg-keyboard>
     </section>
     <ng-template #loading>
         <section class="loading-message">

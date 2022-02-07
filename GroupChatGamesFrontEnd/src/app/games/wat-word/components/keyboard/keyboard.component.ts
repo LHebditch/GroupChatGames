@@ -73,6 +73,7 @@ export class KeyboardComponent implements OnInit, OnChanges {
   }
 
   private generateKeyboardDef(): void {
+    if (this.keyBoardDef.length) return;
     for (let row of this.keyboardKeys) {
       const defRow: Key[] = []
       for (let key of row) {
@@ -94,6 +95,9 @@ export class KeyboardComponent implements OnInit, OnChanges {
   }
 
   private updateKeyState(key: string, state: UsedKey) {
+    if (!this.keyBoardDef.length) {
+      this.generateKeyboardDef();
+    }
     this.keyBoardDef.forEach(row => {
       row.forEach(k => {
         if (k.val === key) {
